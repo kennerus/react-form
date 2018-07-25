@@ -1,7 +1,7 @@
 import React from 'react';
-import FormElement from './FormElement';
+import FormElement from '../common/FormElement';
 
-export default class Form extends React.Component {
+export default class RegistrationForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -80,21 +80,37 @@ export default class Form extends React.Component {
     }
   };
 
+  validateForm = async () => {
+    const {isLoginValid, isEmailValid, isPasswordValid, isRepeatPasswordMatch} = this.state;
+
+    if (isLoginValid && isEmailValid && isPasswordValid && isRepeatPasswordMatch) {
+      await this.setState({isFormValid: true});
+    } else {
+      await this.setState({isFormValid: false});
+    }
+  };
+
   handleSubmit(e) {
     e.preventDefault();
-    const {login, email, password} = this.state;
+    const {login, email, password, isFormValid} = this.state;
+
+    this.validateForm;
 
     let formData = new FormData();
     formData.append('login', login);
     formData.append('email', email);
     formData.append('password', password);
 
-    fetch('/mail2.php', {
-      method: 'POST',
-      body: formData
-    })
+    if (isFormValid) {
+      fetch('/mail2.php', {
+        method: 'POST',
+        body: formData
+      })
       .then(() => alert('Ваше письмо отправлено. В ближайшее время с вами свяжется наш менеджер.'))
       .catch(response => console.log(response))
+    } else {
+      alert('Заполните все поля.')
+    }
 
   };
 
@@ -108,7 +124,7 @@ export default class Form extends React.Component {
           inputName="login"
           inputPlaceholder="Enter login *"
           inputChange={this._onChange}
-          validateInput={this.validateLogin}
+          inputValidate={this.validateLogin}
           inputError={this.errorClass(this.state.formErrorLogin)}
         />
 
@@ -119,7 +135,7 @@ export default class Form extends React.Component {
           inputName="email"
           inputPlaceholder="Enter email *"
           inputChange={this._onChange}
-          validateInput={this.validateEmail}
+          inputValidate={this.validateEmail}
           inputError={this.errorClass(this.state.formErrorEmail)}
         />
 
@@ -130,7 +146,7 @@ export default class Form extends React.Component {
           inputName="password"
           inputPlaceholder="Enter password *"
           inputChange={this._onChange}
-          validateInput={this.validatePassword}
+          inputValidate={this.validatePassword}
           inputError={this.errorClass(this.state.formErrorPassword)}
         />
 
@@ -141,13 +157,13 @@ export default class Form extends React.Component {
           inputName="repeatPassword"
           inputPlaceholder="Repeat password here *"
           inputChange={this._onChange}
-          validateInput={this.validateRepeatPassword}
+          inputValidate={this.validateRepeatPassword}
           inputError={this.errorClass(this.state.formErrorRepeatPassword)}
         />
 
         <FormElement
           inputType="submit"
-          id="submit"
+          inputID="submit"
           inputName="submit"
           inputValue="Send"
         />

@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import './Form/Form.css';
+import './common/Form.css';
 import registerServiceWorker from './registerServiceWorker';
-import Form from "./Form/Form";
+import App from "./App";
 
-ReactDOM.render(<Form />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();

@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const FormElement = props => {
-  const {labelText, inputType, inputID, inputName, inputPlaceholder, inputValue, validateInput, inputChange, inputError} = props;
+  const {labelText, inputType, inputID, inputName, inputPlaceholder, inputValue, inputValidate, inputChange, inputError} = props;
 
  if (inputType === 'submit') {
    return (
@@ -27,12 +28,22 @@ const FormElement = props => {
          name={inputName}
          placeholder={inputPlaceholder}
          onChange={inputChange}
-         onBlur={validateInput}
+         onBlur={inputValidate}
          value={inputValue}
        />
      </div>
    );
  }
+};
+
+FormElement.propTypes = {
+  inputType: PropTypes.string.isRequired,
+  inputID: PropTypes.string.isRequired,
+  inputName: PropTypes.string.isRequired,
+  inputValue: PropTypes.string,
+  inputChange: PropTypes.string,
+  inputValidate: PropTypes.string,
+  inputPlaceholder: PropTypes.string
 };
 
 export default FormElement;
