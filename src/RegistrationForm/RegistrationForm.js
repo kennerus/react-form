@@ -94,7 +94,7 @@ export default class RegistrationForm extends React.Component {
     e.preventDefault();
     const {login, email, password, isFormValid} = this.state;
 
-    this.validateForm;
+    this.validateForm();
 
     let formData = new FormData();
     formData.append('login', login);
@@ -106,8 +106,8 @@ export default class RegistrationForm extends React.Component {
         method: 'POST',
         body: formData
       })
-      .then(() => alert('Ваше письмо отправлено. В ближайшее время с вами свяжется наш менеджер.'))
-      .catch(response => console.log(response))
+        .then(() => alert('Ваше письмо отправлено. В ближайшее время с вами свяжется наш менеджер.'))
+        .catch(response => console.log(response))
     } else {
       alert('Заполните все поля.')
     }
@@ -116,58 +116,60 @@ export default class RegistrationForm extends React.Component {
 
   render() {
     return (
-      <form className="form" onSubmit={this.handleSubmit}>
-        <FormElement
-          labelText="Login"
-          inputType="text"
-          inputID="inputLogin"
-          inputName="login"
-          inputPlaceholder="Enter login *"
-          inputChange={this._onChange}
-          inputValidate={this.validateLogin}
-          inputError={this.errorClass(this.state.formErrorLogin)}
-        />
+      <main className="main">
+        <form className="form" onSubmit={this.handleSubmit}>
+          <FormElement
+            labelText="Логин"
+            inputType="text"
+            inputID="inputLogin"
+            inputName="login"
+            inputPlaceholder="Введите логин*"
+            inputChange={this._onChange}
+            inputValidate={this.validateLogin}
+            inputError={this.errorClass(this.state.formErrorLogin)}
+          />
 
-        <FormElement
-          labelText="Email"
-          inputType="email"
-          inputID="inputEmail"
-          inputName="email"
-          inputPlaceholder="Enter email *"
-          inputChange={this._onChange}
-          inputValidate={this.validateEmail}
-          inputError={this.errorClass(this.state.formErrorEmail)}
-        />
+          <FormElement
+            labelText="Email"
+            inputType="email"
+            inputID="inputEmail"
+            inputName="email"
+            inputPlaceholder="Введите email *"
+            inputChange={this._onChange}
+            inputValidate={this.validateEmail}
+            inputError={this.errorClass(this.state.formErrorEmail)}
+          />
 
-        <FormElement
-          labelText="Password"
-          inputType="password"
-          inputID="inputPassword"
-          inputName="password"
-          inputPlaceholder="Enter password *"
-          inputChange={this._onChange}
-          inputValidate={this.validatePassword}
-          inputError={this.errorClass(this.state.formErrorPassword)}
-        />
+          <FormElement
+            labelText="Пароль"
+            inputType="password"
+            inputID="inputPassword"
+            inputName="password"
+            inputPlaceholder="Введите пароль*"
+            inputChange={this._onChange}
+            inputValidate={this.validatePassword}
+            inputError={this.errorClass(this.state.formErrorPassword)}
+          />
 
-        <FormElement
-          labelText="Repeat Password"
-          inputType="password"
-          inputID="inputRepeatPassword"
-          inputName="repeatPassword"
-          inputPlaceholder="Repeat password here *"
-          inputChange={this._onChange}
-          inputValidate={this.validateRepeatPassword}
-          inputError={this.errorClass(this.state.formErrorRepeatPassword)}
-        />
+          <FormElement
+            labelText="Повторите пароль"
+            inputType="password"
+            inputID="inputRepeatPassword"
+            inputName="repeatPassword"
+            inputPlaceholder="Повторите пароль*"
+            inputChange={this._onChange}
+            inputValidate={this.validateRepeatPassword}
+            inputError={this.errorClass(this.state.formErrorRepeatPassword)}
+          />
 
-        <FormElement
-          inputType="submit"
-          inputID="submit"
-          inputName="submit"
-          inputValue="Send"
-        />
-      </form>
+          <FormElement
+            inputType="submit"
+            inputID="submit"
+            inputName="submit"
+            inputValue="Зарегистрироваться"
+          />
+        </form>
+      </main>
     );
   }
-}
+};
