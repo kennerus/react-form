@@ -34,7 +34,6 @@ export default class AboutForm extends React.Component {
       isEmailValid: false,
       isExperienceValid: false,
       isFormValid: false,
-      startDate: ''
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -195,7 +194,6 @@ export default class AboutForm extends React.Component {
               popperPlacement="top-start"
               id="inputBirthDate"
               className="input"
-              selected={this.state.startDate}
               onChange={this.handleChangeDate}
               locale="ru"
               placeholderText="Выберите дату рождения"

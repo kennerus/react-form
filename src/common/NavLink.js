@@ -5,10 +5,24 @@ import PropTypes from 'prop-types';
 class NavLink extends React.Component {
   render() {
     let isActive = this.context.router.route.location.pathname === this.props.to;
-    let className = isActive ? 'navigation__link navigation__link_current' : 'navigation__link';
+    let isIndex = this.context.router.route.location.pathname === "/";
+
+    let activeClass = () => {
+      if (isActive) {
+        return 'navigation__link_current';
+      } else {
+         return '';
+      }
+    };
+
+    let defaultlink = '';
+
+    if(this.props.defaultlink !== undefined && isIndex){
+      defaultlink = this.props.defaultlink;
+    }
 
     return(
-      <Link className={className} {...this.props}>
+      <Link className={`navigation__link ${activeClass()} ${defaultlink}`} {...this.props}>
         {this.props.children}
       </Link>
     );
@@ -16,7 +30,8 @@ class NavLink extends React.Component {
 }
 
 NavLink.contextTypes = {
-  router: PropTypes.object
+  router: PropTypes.object,
+  defaultlink: PropTypes.string
 };
 
 export default NavLink;

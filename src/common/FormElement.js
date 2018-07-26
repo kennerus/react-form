@@ -2,38 +2,43 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const FormElement = props => {
-  const {labelText, inputType, inputID, inputName, inputPlaceholder, inputValue, inputValidate, inputChange, inputError} = props;
+  const {labelText, inputType, inputID, inputName, inputPlaceholder, inputValue, inputValidate, inputChange} = props;
+  let inputError = '';
 
- if (inputType === 'submit') {
-   return (
-     <div className="form__element">
-       <input
-         type={inputType}
-         className="input input_submit"
-         id={inputID}
-         name={inputName}
-         value={inputValue}
-       />
-     </div>
-   );
- } else {
-   return (
-     <div className="form__element">
-       <label className="label" htmlFor={inputID}>{labelText}</label>
+  if (props.inputError !== undefined) {
+    inputError = props.inputError;
+  }
 
-       <input
-         type={inputType}
-         className={`input ${inputError}`}
-         id={inputID}
-         name={inputName}
-         placeholder={inputPlaceholder}
-         onChange={inputChange}
-         onBlur={inputValidate}
-         value={inputValue}
-       />
-     </div>
-   );
- }
+  if (inputType === 'submit') {
+    return (
+      <div className="form__element">
+        <input
+          type={inputType}
+          className="input input_submit"
+          id={inputID}
+          name={inputName}
+          value={inputValue}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <div className="form__element">
+        <label className="label" htmlFor={inputID}>{labelText}</label>
+
+        <input
+          type={inputType}
+          className={`input ${inputError}`}
+          id={inputID}
+          name={inputName}
+          placeholder={inputPlaceholder}
+          onChange={inputChange}
+          onBlur={inputValidate}
+          value={inputValue}
+        />
+      </div>
+    );
+  }
 };
 
 FormElement.propTypes = {
@@ -41,9 +46,10 @@ FormElement.propTypes = {
   inputID: PropTypes.string.isRequired,
   inputName: PropTypes.string.isRequired,
   inputValue: PropTypes.string,
-  inputChange: PropTypes.string,
-  inputValidate: PropTypes.string,
-  inputPlaceholder: PropTypes.string
+  inputChange: PropTypes.func,
+  inputValidate: PropTypes.func,
+  inputPlaceholder: PropTypes.string,
+  inputError: PropTypes.string
 };
 
 export default FormElement;
