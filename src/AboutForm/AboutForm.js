@@ -2,7 +2,9 @@ import React from 'react';
 import MaskedInput from 'react-maskedinput';
 import 'moment/locale/ru';
 import 'react-datepicker/dist/react-datepicker.css';
-import FormElement from '../common/FormElement';import Modal from '../common/Modal/Modal';
+import {errorClass} from '../common/validationFunctions';
+import FormElement from '../common/FormElement';
+import Modal from '../common/Modal/Modal';
 
 export default class AboutForm extends React.Component {
   constructor(props) {
@@ -31,9 +33,9 @@ export default class AboutForm extends React.Component {
       isEmailValid: false,
       isExperienceValid: false,
       isFormValid: false,
+      isModalOpenSuccess: false,
+      isModalOpenError: false
     };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   _onChange = (e) => {
@@ -46,10 +48,6 @@ export default class AboutForm extends React.Component {
 
   handleSelectSex = (e) => {
     this.setState({sex: e.target.value});
-  };
-
-  errorClass = error => {
-    return (error === ('') ? '' : error === ('valid') ? 'input_done' : 'input_error');
   };
 
   validateName = async () => {
@@ -98,11 +96,13 @@ export default class AboutForm extends React.Component {
     }
   };
 
-  handleSubmit(e) {
+  handleSubmit = async e => {
     e.preventDefault();
-    const {name, phone, email, experience, age, sex, city, social, education, hobbies, wage, schedule, comments, skills, scope, isFormValid} = this.state;
+    const {name, phone, email, experience, age, sex, city, social, education, hobbies, wage, schedule, comments, skills, scope} = this.state;
+    // let param = document.querySelector('meta[name=csrf-param]').getAttribute("content");
+    // let token = document.querySelector('meta[name=csrf-token]').getAttribute("content");
 
-    this.validateForm();
+    await this.validateForm();
 
     let formData = new FormData();
     formData.append('name', name);
@@ -120,29 +120,38 @@ export default class AboutForm extends React.Component {
     formData.append('schedule', schedule);
     formData.append('hobbies', hobbies);
     formData.append('comments', comments);
+    // formData.append(param, token);
 
-
-    if (isFormValid) {
+    if (this.state.isFormValid) {
       fetch('/request/default/save-f', {
         method: 'POST',
         body: formData
       })
         .then(response => {
+          console.log(response.text());
           this.setState({isModalOpenSuccess: true});
         })
         .catch(response => {
+          console.log(response.text());
           this.setState({isModalOpenError: true});
         })
     } else {
-      console.log('not valid');
       let inputValidateClass = document.querySelectorAll('.js_validateClass');
 
       for (let i = 0; i < inputValidateClass.length; i++) {
-        if (!inputValidateClass[i].classList.contains('input_done')) {
-          inputValidateClass[i].classList.add('input_error');
+        if (!inputValidateClass[i].classList.contains('element__input_done')) {
+          inputValidateClass[i].classList.add('element__input_error');
         }
       }
     }
+  };
+
+  modalCloseHandlerSuccess = () => {
+    this.setState({isModalOpenSuccess: false});
+  };
+
+  modalCloseHandlerError = () => {
+    this.setState({isModalOpenError: false});
   };
 
   render() {
@@ -150,11 +159,11 @@ export default class AboutForm extends React.Component {
     let modal;
 
     if (isModalOpenSuccess) {
-      modal = <Modal modalText="Вы успешно зарегистрированы." clickHandler={this.modalCloseHandlerSuccess} />;
+      modal = <Modal modalText="Анкета успешно отправлена." clickHandler={this.modalCloseHandlerSuccess}/>;
     }
 
     if (isModalOpenError) {
-      modal = <Modal modalText="Что-то пошло не так... попробуйте позже." clickHandler={this.modalCloseHandlerError} />;
+      modal = <Modal modalText="Что-то пошло не так... попробуйте позже." clickHandler={this.modalCloseHandlerError}/>;
     }
 
     return (
@@ -169,14 +178,14 @@ export default class AboutForm extends React.Component {
             inputPlaceholder="Введите ваше Ф.И.О."
             inputChange={this._onChange}
             inputValidate={this.validateName}
-            inputError={this.errorClass(this.state.formErrorName)}
+            inputError={errorClass(this.state.formErrorName)}
           />
 
-          <div className="form__element">
-            <label className="label" htmlFor="inputPhone">Введите ваш телефон</label>
+          <div className="form__element element">
+            <label className="element__label" htmlFor="inputPhone">Введите ваш телефон</label>
 
             <MaskedInput
-              className={`input`}
+              className={`element__input`}
               id="inputPhone"
               mask="+38(011)111-11-11"
               name="phone"
@@ -194,20 +203,25 @@ export default class AboutForm extends React.Component {
             inputPlaceholder="Email"
             inputChange={this._onChange}
             inputValidate={this.validateEmail}
-            inputError={this.errorClass(this.state.formErrorEmail)}
+            inputError={errorClass(this.state.formErrorEmail)}
           />
 
-          <div className="form__element">
-            <label className="label" htmlFor="inputScope">Сфера деятельности*</label>
+          <div className="form__element element">
+            <label className="element__label" htmlFor="inputScope">Сфера деятельности</label>
 
-            <select className="input" id="inputScope" name="scope" onClick={this.handleSelectScope}>
+            <select
+              className={`element__input`}
+              id="inputScope"
+              name="scope"
+              onClick={this.handleSelectScope}
+            >
               <option>Backend</option>
               <option>Frontend</option>
-              <option>Web-дизайнер </option>
+              <option>Web-дизайнер</option>
               <option>Тестировщик</option>
               <option>SMM-менеджер</option>
               <option>SEO-специалист</option>
-              <option>Интернет-маркетолог </option>
+              <option>Интернет-маркетолог</option>
               <option>Менеджер по продажам IТ-услуг</option>
               <option>PR-менеджер</option>
             </select>
@@ -222,10 +236,10 @@ export default class AboutForm extends React.Component {
             inputChange={this._onChange}
           />
 
-          <div className="form__element">
-            <label className="label" htmlFor="inputSex">Ваш пол</label>
+          <div className="form__element element">
+            <label className="element__label" htmlFor="inputSex">Ваш пол</label>
 
-            <select className="input" id="inputSex" name="sex" onClick={this.handleSelectSex}>
+            <select className="element__input" id="inputSex" name="sex" onClick={this.handleSelectSex}>
               <option>Мужской</option>
               <option>Женский</option>
             </select>
@@ -240,7 +254,7 @@ export default class AboutForm extends React.Component {
             inputPlaceholder="Опыт работы"
             inputChange={this._onChange}
             inputValidate={this.validateExperience}
-            inputError={this.errorClass(this.state.formErrorExperience)}
+            inputError={errorClass(this.state.formErrorExperience)}
           />
 
           <FormElement
@@ -306,11 +320,11 @@ export default class AboutForm extends React.Component {
             inputChange={this._onChange}
           />
 
-          <div className="form__element">
-            <label className="label" htmlFor="textareaComments">Дополнительная информация</label>
+          <div className="form__element element">
+            <label className="element__label" htmlFor="textareaComments">Дополнительная информация</label>
 
             <textarea
-              className="input input_textarea"
+              className="element__input element__input_textarea"
               id="textareaComments"
               name="comments"
               onChange={this._onChange}
@@ -324,6 +338,7 @@ export default class AboutForm extends React.Component {
             inputValue="Отправить анкету"
           />
         </form>
+        {modal}
       </main>
     );
   }

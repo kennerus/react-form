@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const ModalOverlay = props => {
   return (
-    <div className="modal__overlay" onClick={props.click}/>
+    <div className="popup__overlay" onClick={props.click}/>
   );
 };
 

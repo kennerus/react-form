@@ -8,7 +8,7 @@ class MyComponent extends Component {
     const {modalText} = this.props;
 
     return (
-      <div className="modal">
+      <div className="popup">
         <ModalOverlay click={this.props.clickHandler} />
         <ModalBody modalText={modalText} click={this.props.clickHandler} />
       </div>

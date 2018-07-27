@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 const ModalBody = props => {
 
   return (
-    <div className="modal__body">
-      <button type="button" className="modal__close" onClick={props.click}>×</button>
+    <div className="popup__body">
+      <button type="button" className="popup__close" onClick={props.click}>×</button>
       <p>{props.modalText}</p>
     </div>
   );
 };
 
 ModalBody.propTypes = {
-  modalText: PropTypes.string.userRequired,
+  modalText: PropTypes.string.isRequired,
   click: PropTypes.func
 };
 

@@ -24,10 +24,10 @@ const FormElement = props => {
 
   if (inputType === 'submit') {
     return (
-      <div className="form__element">
+      <div className="form__element element">
         <input
           type={inputType}
-          className="input input_submit"
+          className="element__input element__input_submit"
           id={inputID}
           name={inputName}
           value={inputValue}
@@ -36,12 +36,12 @@ const FormElement = props => {
     );
   } else {
     return (
-      <div className="form__element">
-        <label className="label" htmlFor={inputID}>{labelText}</label>
+      <div className="form__element element">
+        <label className="element__label" htmlFor={inputID}>{labelText}</label>
 
         <input
           type={inputType}
-          className={`input ${inputError} ${inputValidateClass}`}
+          className={`element__input ${inputError} ${inputValidateClass}`}
           id={inputID}
           name={inputName}
           placeholder={inputPlaceholder}
