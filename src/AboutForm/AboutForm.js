@@ -1,6 +1,5 @@
 import React from 'react';
 import MaskedInput from 'react-maskedinput';
-import DatePicker from 'react-datepicker';
 import 'moment/locale/ru';
 import 'react-datepicker/dist/react-datepicker.css';
 import FormElement from '../common/FormElement';import Modal from '../common/Modal/Modal';
@@ -13,23 +12,22 @@ export default class AboutForm extends React.Component {
       name: '',
       phone: '',
       email: '',
+      scope: '',
+      age: '',
+      sex: '',
       experience: '',
-      birthDate: '',
       city: '',
       social: '',
-      maritalStatus: '',
       education: '',
-      hobbies: '',
       skills: '',
       wage: '',
       schedule: '',
+      hobbies: '',
       comments: '',
       formErrorName: '',
-      formErrorPhone: '',
       formErrorEmail: '',
       formErrorExperience: '',
       isNameValid: false,
-      isPhoneValid: false,
       isEmailValid: false,
       isExperienceValid: false,
       isFormValid: false,
@@ -40,6 +38,14 @@ export default class AboutForm extends React.Component {
 
   _onChange = (e) => {
     this.setState({[e.target.name]: e.target.value});
+  };
+
+  handleSelectScope = (e) => {
+    this.setState({scope: e.target.value});
+  };
+
+  handleSelectSex = (e) => {
+    this.setState({sex: e.target.value});
   };
 
   errorClass = error => {
@@ -55,18 +61,6 @@ export default class AboutForm extends React.Component {
     } else {
       await this.setState({isNameValid: false});
       this.setState({formErrorName: 'invalid'});
-    }
-  };
-
-  validatePhone = async () => {
-    const {phone} = this.state;
-
-    if (phone.match(/^(?!\+.*\(.*\).*\-\-.*$)(?!\+.*\(.*\).*\-$)(\+38\(0[0-9]{2}\)[0-9]{3}[-]{1}[0-9]{2}[-]{1}[0-9]{2})$/)) {
-      await this.setState({isPhoneValid: true});
-      this.setState({formErrorPhone: 'valid'});
-    } else {
-      await this.setState({isPhoneValid: false});
-      this.setState({formErrorPhone: 'invalid'});
     }
   };
 
@@ -95,24 +89,18 @@ export default class AboutForm extends React.Component {
   };
 
   validateForm = async () => {
-    const {isNameValid, isPhoneValid, isEmailValid, isExperienceValid} = this.state;
+    const {isNameValid, isEmailValid, isExperienceValid} = this.state;
 
-    if (isNameValid && isPhoneValid && isEmailValid && isExperienceValid) {
+    if (isNameValid && isEmailValid && isExperienceValid) {
       await this.setState({isFormValid: true});
     } else {
       await this.setState({isFormValid: false});
     }
   };
 
-  handleChangeDate = (date) => {
-    this.setState({
-      startDate: date
-    });
-  };
-
   handleSubmit(e) {
     e.preventDefault();
-    const {name, phone, email, experience, isFormValid} = this.state;
+    const {name, phone, email, experience, age, sex, city, social, education, hobbies, wage, schedule, comments, skills, scope, isFormValid} = this.state;
 
     this.validateForm();
 
@@ -120,25 +108,36 @@ export default class AboutForm extends React.Component {
     formData.append('name', name);
     formData.append('phone', phone);
     formData.append('email', email);
+    formData.append('scope', scope);
+    formData.append('age', age);
+    formData.append('sex', sex);
     formData.append('experience', experience);
+    formData.append('city', city);
+    formData.append('social', social);
+    formData.append('education', education);
+    formData.append('skills', skills);
+    formData.append('wage', wage);
+    formData.append('schedule', schedule);
+    formData.append('hobbies', hobbies);
+    formData.append('comments', comments);
+
 
     if (isFormValid) {
-      fetch('/mail2.php', {
+      fetch('/request/default/save-f', {
         method: 'POST',
         body: formData
       })
-        .then(() => {
-          this.setState({isModalOpenSuccess: true})
+        .then(response => {
+          this.setState({isModalOpenSuccess: true});
         })
         .catch(response => {
-          this.setState({isModalOpenError: true})
+          this.setState({isModalOpenError: true});
         })
     } else {
+      console.log('not valid');
       let inputValidateClass = document.querySelectorAll('.js_validateClass');
 
       for (let i = 0; i < inputValidateClass.length; i++) {
-        console.log(inputValidateClass[i]);
-        console.log(!inputValidateClass[i].classList.contains('valid'));
         if (!inputValidateClass[i].classList.contains('input_done')) {
           inputValidateClass[i].classList.add('input_error');
         }
@@ -163,67 +162,86 @@ export default class AboutForm extends React.Component {
         <form className="form" onSubmit={this.handleSubmit}>
           <FormElement
             inputValidateClass="js_validateClass"
-            labelText="Ф.И.О."
+            labelText="Ф.И.О.*"
             inputType="text"
             inputID="inputName"
             inputName="name"
-            inputPlaceholder="Введите ваше Ф.И.О.*"
+            inputPlaceholder="Введите ваше Ф.И.О."
             inputChange={this._onChange}
             inputValidate={this.validateName}
             inputError={this.errorClass(this.state.formErrorName)}
           />
 
-
           <div className="form__element">
             <label className="label" htmlFor="inputPhone">Введите ваш телефон</label>
 
             <MaskedInput
-              className={`input ${this.errorClass(this.state.formErrorPhone)} js_validateClass`}
+              className={`input`}
               id="inputPhone"
               mask="+38(011)111-11-11"
               name="phone"
               value={this.state.phone}
               onChange={this._onChange}
-              onBlur={this.validatePhone}
             />
           </div>
 
           <FormElement
             inputValidateClass="js_validateClass"
-            labelText="Email"
+            labelText="Email*"
             inputType="email"
             inputID="inputEmail"
             inputName="email"
-            inputPlaceholder="Введите ваш email*"
+            inputPlaceholder="Email"
             inputChange={this._onChange}
             inputValidate={this.validateEmail}
             inputError={this.errorClass(this.state.formErrorEmail)}
           />
 
+          <div className="form__element">
+            <label className="label" htmlFor="inputScope">Сфера деятельности*</label>
+
+            <select className="input" id="inputScope" name="scope" onClick={this.handleSelectScope}>
+              <option>Backend</option>
+              <option>Frontend</option>
+              <option>Web-дизайнер </option>
+              <option>Тестировщик</option>
+              <option>SMM-менеджер</option>
+              <option>SEO-специалист</option>
+              <option>Интернет-маркетолог </option>
+              <option>Менеджер по продажам IТ-услуг</option>
+              <option>PR-менеджер</option>
+            </select>
+          </div>
+
+          <FormElement
+            labelText="Ваш возраст"
+            inputType="text"
+            inputID="inputAge"
+            inputName="age"
+            inputPlaceholder="Введите ваш возраст"
+            inputChange={this._onChange}
+          />
+
+          <div className="form__element">
+            <label className="label" htmlFor="inputSex">Ваш пол</label>
+
+            <select className="input" id="inputSex" name="sex" onClick={this.handleSelectSex}>
+              <option>Мужской</option>
+              <option>Женский</option>
+            </select>
+          </div>
+
           <FormElement
             inputValidateClass="js_validateClass"
-            labelText="Опыт работы"
+            labelText="Опыт работы*"
             inputType="text"
             inputID="inputExperience"
             inputName="experience"
-            inputPlaceholder="Опыт работы*"
+            inputPlaceholder="Опыт работы"
             inputChange={this._onChange}
             inputValidate={this.validateExperience}
             inputError={this.errorClass(this.state.formErrorExperience)}
           />
-
-          <div className="form__element">
-            <label className="label" htmlFor="inputBirthDate">Введите дату рождения</label>
-
-            <DatePicker
-              popperPlacement="top-start"
-              id="inputBirthDate"
-              className="input"
-              onChange={this.handleChangeDate}
-              locale="ru"
-              placeholderText="Выберите дату рождения"
-            />
-          </div>
 
           <FormElement
             labelText="Город проживания"
@@ -244,29 +262,11 @@ export default class AboutForm extends React.Component {
           />
 
           <FormElement
-            labelText="Семейное положение"
-            inputType="text"
-            inputID="inputMaritalStatus"
-            inputName="maritalStatus"
-            inputPlaceholder="Семейное положение"
-            inputChange={this._onChange}
-          />
-
-          <FormElement
             labelText="Образование"
             inputType="text"
             inputID="inputEducation"
             inputName="education"
             inputPlaceholder="Образование"
-            inputChange={this._onChange}
-          />
-
-          <FormElement
-            labelText="Хобби"
-            inputType="text"
-            inputID="inputHobbies"
-            inputName="hobbies"
-            inputPlaceholder="Хобби"
             inputChange={this._onChange}
           />
 
@@ -298,21 +298,22 @@ export default class AboutForm extends React.Component {
           />
 
           <FormElement
-            labelText="Желаемый уровень заработной платы"
+            labelText="Хобби"
             inputType="text"
-            inputID="inputWage"
-            inputName="wage"
-            inputPlaceholder="Желаемый уровень заработной платы"
+            inputID="inputHobbies"
+            inputName="hobbies"
+            inputPlaceholder="Хобби"
             inputChange={this._onChange}
           />
 
           <div className="form__element">
-            <label className="label" htmlFor="inputBirthDate">Дополнительная информация</label>
+            <label className="label" htmlFor="textareaComments">Дополнительная информация</label>
 
             <textarea
-              className="input"
+              className="input input_textarea"
               id="textareaComments"
               name="comments"
+              onChange={this._onChange}
             />
           </div>
 

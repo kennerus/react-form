@@ -27,6 +27,11 @@ body {
   background-color: #3070FF;
 }
 
+.navigation__link:active,
+.navigation__link:focus {
+  background-color: #2e66da;
+}
+
 .navigation__link:last-child {
   border-right: 1px solid #3070FF;
 }
@@ -36,7 +41,7 @@ body {
   box-sizing: border-box;
   max-width: 600px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 20px 15px;
   text-align: center;
 }
 
@@ -53,7 +58,7 @@ body {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .form__element:first-child {
@@ -106,6 +111,11 @@ body {
 
 .input_submit:hover {
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+.input_textarea {
+  height: 150px;
+  resize: none;
 }
 
 /* modal styles */

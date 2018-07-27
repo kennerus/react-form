@@ -1,4 +1,5 @@
 import React from 'react';
+import MaskedInput from 'react-maskedinput';
 import FormElement from '../common/FormElement';
 import Modal from '../common/Modal/Modal';
 
@@ -7,18 +8,17 @@ export default class RegistrationForm extends React.Component {
     super(props);
 
     this.state = {
-      login: '',
+      name: '',
+      phone: '',
       email: '',
-      password: '',
-      repeatPassword: '',
-      formErrorLogin: '',
+      scope: '',
+      age: '',
+      sex: '',
+      comments: '',
+      formErrorName: '',
       formErrorEmail: '',
-      formErrorPassword: '',
-      formErrorRepeatPassword: '',
-      isLoginValid: false,
+      isNameValid: false,
       isEmailValid: false,
-      isPasswordValid: false,
-      isRepeatPasswordMatch: false,
       isFormValid: false,
       isModalOpenSuccess: false,
       isModalOpenError: false
@@ -35,15 +35,15 @@ export default class RegistrationForm extends React.Component {
     return (error === ('') ? '' : error === ('valid') ? 'input_done' : 'input_error');
   };
 
-  validateLogin = async () => {
-    const {login} = this.state;
+  validateName = async () => {
+    const {name} = this.state;
 
-    if (login.length >= 2) {
-      await this.setState({isLoginValid: true});
-      this.setState({formErrorLogin: 'valid'});
+    if (name.length >= 5) {
+      await this.setState({isNameValid: true});
+      this.setState({formErrorName: 'valid'});
     } else {
-      await this.setState({isLoginValid: false});
-      this.setState({formErrorLogin: 'invalid'});
+      await this.setState({isNameValid: false});
+      this.setState({formErrorName: 'invalid'});
     }
   };
 
@@ -59,63 +59,52 @@ export default class RegistrationForm extends React.Component {
     }
   };
 
-  validatePassword = async () => {
-    const {password} = this.state;
-
-    if (password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/g)) {
-      await this.setState({isPasswordValid: true});
-      this.setState({formErrorPassword: 'valid'});
-    } else {
-      await this.setState({isPasswordValid: false});
-      this.setState({formErrorPassword: 'invalid'});
-    }
-  };
-
-  validateRepeatPassword = async () => {
-    const {repeatPassword, password} = this.state;
-
-    if (repeatPassword === password && repeatPassword !== '') {
-      await this.setState({isRepeatPasswordValid: true});
-      this.setState({formErrorRepeatPassword: 'valid'});
-    } else {
-      await this.setState({isRepeatPasswordValid: false});
-      this.setState({formErrorRepeatPassword: 'invalid'});
-    }
-  };
-
   validateForm = async () => {
-    const {isLoginValid, isEmailValid, isPasswordValid, isRepeatPasswordMatch} = this.state;
+    const {isNameValid, isEmailValid} = this.state;
 
-    if (isLoginValid && isEmailValid && isPasswordValid && isRepeatPasswordMatch) {
+    if (isNameValid && isEmailValid) {
       await this.setState({isFormValid: true});
     } else {
       await this.setState({isFormValid: false});
     }
   };
 
+  handleSelectScope = (e) => {
+    this.setState({scope: e.target.value});
+  };
+
+  handleSelectSex = (e) => {
+    this.setState({sex: e.target.value});
+  };
+
   handleSubmit(e) {
     e.preventDefault();
-    const {login, email, password, isFormValid} = this.state;
+    const {name, phone, email, scope, age, sex, comments, isFormValid} = this.state;
 
     this.validateForm();
 
     let formData = new FormData();
-    formData.append('login', login);
+    formData.append('name', name);
+    formData.append('phone', phone);
     formData.append('email', email);
-    formData.append('password', password);
+    formData.append('scope', scope);
+    formData.append('age', age);
+    formData.append('sex', sex);
+    formData.append('comments', comments);
 
     if (isFormValid) {
-      fetch('/mail3.php', {
+      fetch('/request/default/save-r', {
         method: 'POST',
         body: formData
       })
-        .then(() => {
-          this.setState({isModalOpenSuccess: true})
+        .then(response => {
+          this.setState({isModalOpenSuccess: true});
         })
         .catch(response => {
-          this.setState({isModalOpenError: true})
+          this.setState({isModalOpenError: true});
         })
     } else {
+      console.log('not valid');
       let inputValidateClass = document.querySelectorAll('.js_validateClass');
 
       for (let i = 0; i < inputValidateClass.length; i++) {
@@ -153,51 +142,85 @@ export default class RegistrationForm extends React.Component {
         <form className="form" onSubmit={this.handleSubmit}>
           <FormElement
             inputValidateClass="js_validateClass"
-            labelText="Логин"
+            labelText="Ф.И.О.*"
             inputType="text"
-            inputID="inputLogin"
-            inputName="login"
-            inputPlaceholder="Введите логин*"
+            inputID="inputName"
+            inputName="name"
+            inputPlaceholder="Введите ваше Ф.И.О."
             inputChange={this._onChange}
-            inputValidate={this.validateLogin}
-            inputError={this.errorClass(this.state.formErrorLogin)}
+            inputValidate={this.validateName}
+            inputError={this.errorClass(this.state.formErrorName)}
           />
+
+          <div className="form__element">
+            <label className="label" htmlFor="inputPhone">Введите ваш телефон</label>
+
+            <MaskedInput
+              className={`input`}
+              id="inputPhone"
+              mask="+38(011)111-11-11"
+              name="phone"
+              value={this.state.phone}
+              onChange={this._onChange}
+            />
+          </div>
 
           <FormElement
             inputValidateClass="js_validateClass"
-            labelText="Email"
+            labelText="Email*"
             inputType="email"
             inputID="inputEmail"
             inputName="email"
-            inputPlaceholder="Введите email *"
+            inputPlaceholder="Email"
             inputChange={this._onChange}
             inputValidate={this.validateEmail}
             inputError={this.errorClass(this.state.formErrorEmail)}
           />
 
-          <FormElement
-            inputValidateClass="js_validateClass"
-            labelText="Пароль"
-            inputType="password"
-            inputID="inputPassword"
-            inputName="password"
-            inputPlaceholder="Введите пароль*"
-            inputChange={this._onChange}
-            inputValidate={this.validatePassword}
-            inputError={this.errorClass(this.state.formErrorPassword)}
-          />
+          <div className="form__element">
+            <label className="label" htmlFor="inputScope">Сфера деятельности*</label>
+
+            <select className="input" id="inputScope" name="scope" onClick={this.handleSelectScope}>
+              <option>Backend</option>
+              <option>Frontend</option>
+              <option>Web-дизайнер </option>
+              <option>Тестировщик</option>
+              <option>SMM-менеджер</option>
+              <option>SEO-специалист</option>
+              <option>Интернет-маркетолог </option>
+              <option>Менеджер по продажам IТ-услуг</option>
+              <option>PR-менеджер</option>
+            </select>
+          </div>
 
           <FormElement
-            inputValidateClass="js_validateClass"
-            labelText="Повторите пароль"
-            inputType="password"
-            inputID="inputRepeatPassword"
-            inputName="repeatPassword"
-            inputPlaceholder="Повторите пароль*"
+            labelText="Ваш возраст"
+            inputType="text"
+            inputID="inputAge"
+            inputName="age"
+            inputPlaceholder="Введите ваш возраст"
             inputChange={this._onChange}
-            inputValidate={this.validateRepeatPassword}
-            inputError={this.errorClass(this.state.formErrorRepeatPassword)}
           />
+
+          <div className="form__element">
+            <label className="label" htmlFor="inputSex">Ваш пол</label>
+
+            <select className="input" id="inputSex" name="sex" onClick={this.handleSelectSex}>
+              <option>Мужской</option>
+              <option>Женский</option>
+            </select>
+          </div>
+
+          <div className="form__element">
+            <label className="label" htmlFor="textareaComments">Дополнительная информация</label>
+
+            <textarea
+              className="input input_textarea"
+              id="textareaComments"
+              name="comments"
+              onChange={this._onChange}
+            />
+          </div>
 
           <FormElement
             inputType="submit"
