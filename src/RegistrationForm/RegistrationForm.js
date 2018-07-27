@@ -1,5 +1,6 @@
 import React from 'react';
 import FormElement from '../common/FormElement';
+import Modal from '../common/Modal/Modal';
 
 export default class RegistrationForm extends React.Component {
   constructor(props) {
@@ -19,6 +20,8 @@ export default class RegistrationForm extends React.Component {
       isPasswordValid: false,
       isRepeatPasswordMatch: false,
       isFormValid: false,
+      isModalOpenSuccess: false,
+      isModalOpenError: false
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -102,23 +105,54 @@ export default class RegistrationForm extends React.Component {
     formData.append('password', password);
 
     if (isFormValid) {
-      fetch('/mail2.php', {
+      fetch('/mail3.php', {
         method: 'POST',
         body: formData
       })
-        .then(() => alert('Ваше письмо отправлено. В ближайшее время с вами свяжется наш менеджер.'))
-        .catch(response => console.log(response))
+        .then(() => {
+          this.setState({isModalOpenSuccess: true})
+        })
+        .catch(response => {
+          this.setState({isModalOpenError: true})
+        })
     } else {
-      alert('Заполните все поля.')
-    }
+      let inputValidateClass = document.querySelectorAll('.js_validateClass');
 
+      for (let i = 0; i < inputValidateClass.length; i++) {
+        console.log(inputValidateClass[i]);
+        console.log(!inputValidateClass[i].classList.contains('valid'));
+        if (!inputValidateClass[i].classList.contains('input_done')) {
+          inputValidateClass[i].classList.add('input_error');
+        }
+      }
+    }
+  };
+
+  modalCloseHandlerSuccess = () => {
+    this.setState({isModalOpenSuccess: false});
+  };
+
+  modalCloseHandlerError = () => {
+    this.setState({isModalOpenError: false});
   };
 
   render() {
+    const {isModalOpenSuccess, isModalOpenError} = this.state;
+    let modal;
+
+    if (isModalOpenSuccess) {
+      modal = <Modal modalText="Вы успешно зарегистрированы." clickHandler={this.modalCloseHandlerSuccess} />;
+    }
+
+    if (isModalOpenError) {
+      modal = <Modal modalText="Что-то пошло не так... попробуйте позже." clickHandler={this.modalCloseHandlerError} />;
+    }
+
     return (
       <main className="main">
         <form className="form" onSubmit={this.handleSubmit}>
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Логин"
             inputType="text"
             inputID="inputLogin"
@@ -130,6 +164,7 @@ export default class RegistrationForm extends React.Component {
           />
 
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Email"
             inputType="email"
             inputID="inputEmail"
@@ -141,6 +176,7 @@ export default class RegistrationForm extends React.Component {
           />
 
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Пароль"
             inputType="password"
             inputID="inputPassword"
@@ -152,6 +188,7 @@ export default class RegistrationForm extends React.Component {
           />
 
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Повторите пароль"
             inputType="password"
             inputID="inputRepeatPassword"
@@ -169,6 +206,7 @@ export default class RegistrationForm extends React.Component {
             inputValue="Зарегистрироваться"
           />
         </form>
+        {modal}
       </main>
     );
   }

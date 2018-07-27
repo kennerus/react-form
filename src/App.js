@@ -13,7 +13,6 @@ class App extends Component {
           <Navigation/>
 
           <Switch>
-            <Route path="/" component={AboutForm} exact />
             <Route path="/form" component={AboutForm} exact />
             <Route path="/request" component={Form} exact />
             <Route component={NotFound} />

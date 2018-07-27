@@ -9,7 +9,7 @@ const NotFound = () => {
     <main className="main main_not-found">
         <h1>Страница не найдена :(</h1>
 
-        <Link className={css(styles.link)} to="/">
+        <Link className={css(styles.link)} to="/form">
           <span className={css(styles.text)}>Вернуться к форме соискателя</span>
           <img
             className={css(styles.img)}
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
   link: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: '20px',
     ':hover': {
       textDecoration: 'none'

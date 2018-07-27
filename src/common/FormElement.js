@@ -2,11 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const FormElement = props => {
-  const {labelText, inputType, inputID, inputName, inputPlaceholder, inputValue, inputValidate, inputChange} = props;
+  const {labelText,
+    inputType,
+    inputID,
+    inputName,
+    inputPlaceholder,
+    inputValue,
+    inputValidate,
+    inputChange
+  } = props;
   let inputError = '';
+  let inputValidateClass = '';
 
   if (props.inputError !== undefined) {
     inputError = props.inputError;
+  }
+
+  if (props.inputValidateClass !== undefined) {
+    inputValidateClass = props.inputValidateClass;
   }
 
   if (inputType === 'submit') {
@@ -28,7 +41,7 @@ const FormElement = props => {
 
         <input
           type={inputType}
-          className={`input ${inputError}`}
+          className={`input ${inputError} ${inputValidateClass}`}
           id={inputID}
           name={inputName}
           placeholder={inputPlaceholder}
@@ -49,7 +62,8 @@ FormElement.propTypes = {
   inputChange: PropTypes.func,
   inputValidate: PropTypes.func,
   inputPlaceholder: PropTypes.string,
-  inputError: PropTypes.string
+  inputError: PropTypes.string,
+  inputValidateClass: PropTypes.string
 };
 
 export default FormElement;

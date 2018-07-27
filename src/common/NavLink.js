@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 class NavLink extends React.Component {
   render() {
     let isActive = this.context.router.route.location.pathname === this.props.to;
-    let isIndex = this.context.router.route.location.pathname === "/";
+    // let isIndex = this.context.router.route.location.pathname === "/";
 
     let activeClass = () => {
       if (isActive) {
@@ -15,14 +15,14 @@ class NavLink extends React.Component {
       }
     };
 
-    let defaultlink = '';
+    // let defaultlink = '';
 
-    if(this.props.defaultlink !== undefined && isIndex){
-      defaultlink = this.props.defaultlink;
-    }
+    // if(this.props.defaultlink !== undefined && isIndex){
+    //   defaultlink = this.props.defaultlink;
+    // }
 
     return(
-      <Link className={`navigation__link ${activeClass()} ${defaultlink}`} {...this.props}>
+      <Link className={`navigation__link ${activeClass()}`} {...this.props}>
         {this.props.children}
       </Link>
     );

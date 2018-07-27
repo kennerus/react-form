@@ -1,10 +1,9 @@
 import React from 'react';
 import MaskedInput from 'react-maskedinput';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
 import 'moment/locale/ru';
 import 'react-datepicker/dist/react-datepicker.css';
-import FormElement from '../common/FormElement';
+import FormElement from '../common/FormElement';import Modal from '../common/Modal/Modal';
 
 export default class AboutForm extends React.Component {
   constructor(props) {
@@ -113,33 +112,57 @@ export default class AboutForm extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    const {name, phone, password, isFormValid} = this.state;
+    const {name, phone, email, experience, isFormValid} = this.state;
 
     this.validateForm();
 
     let formData = new FormData();
     formData.append('name', name);
     formData.append('phone', phone);
-    formData.append('password', password);
+    formData.append('email', email);
+    formData.append('experience', experience);
 
     if (isFormValid) {
       fetch('/mail2.php', {
         method: 'POST',
         body: formData
       })
-        .then(() => alert('Ваше письмо отправлено. В ближайшее время с вами свяжется наш менеджер.'))
-        .catch(response => console.log(response))
+        .then(() => {
+          this.setState({isModalOpenSuccess: true})
+        })
+        .catch(response => {
+          this.setState({isModalOpenError: true})
+        })
     } else {
-      alert('Заполните все поля.')
-    }
+      let inputValidateClass = document.querySelectorAll('.js_validateClass');
 
+      for (let i = 0; i < inputValidateClass.length; i++) {
+        console.log(inputValidateClass[i]);
+        console.log(!inputValidateClass[i].classList.contains('valid'));
+        if (!inputValidateClass[i].classList.contains('input_done')) {
+          inputValidateClass[i].classList.add('input_error');
+        }
+      }
+    }
   };
 
   render() {
+    const {isModalOpenSuccess, isModalOpenError} = this.state;
+    let modal;
+
+    if (isModalOpenSuccess) {
+      modal = <Modal modalText="Вы успешно зарегистрированы." clickHandler={this.modalCloseHandlerSuccess} />;
+    }
+
+    if (isModalOpenError) {
+      modal = <Modal modalText="Что-то пошло не так... попробуйте позже." clickHandler={this.modalCloseHandlerError} />;
+    }
+
     return (
       <main className="main">
         <form className="form" onSubmit={this.handleSubmit}>
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Ф.И.О."
             inputType="text"
             inputID="inputName"
@@ -155,7 +178,7 @@ export default class AboutForm extends React.Component {
             <label className="label" htmlFor="inputPhone">Введите ваш телефон</label>
 
             <MaskedInput
-              className={`input ${this.errorClass(this.state.formErrorPhone)}`}
+              className={`input ${this.errorClass(this.state.formErrorPhone)} js_validateClass`}
               id="inputPhone"
               mask="+38(011)111-11-11"
               name="phone"
@@ -166,6 +189,7 @@ export default class AboutForm extends React.Component {
           </div>
 
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Email"
             inputType="email"
             inputID="inputEmail"
@@ -177,6 +201,7 @@ export default class AboutForm extends React.Component {
           />
 
           <FormElement
+            inputValidateClass="js_validateClass"
             labelText="Опыт работы"
             inputType="text"
             inputID="inputExperience"
